@@ -28,7 +28,8 @@ def save(filename):
            s += phonebook[key].name   + ';'
            for x in phonebook[key].alias:
                s += x + ';'
-           print(s)
+           s += "\n"
+           file.write(s)
     
     file.close()
 
