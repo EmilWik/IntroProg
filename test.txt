@@ -1,3 +1,2 @@
-0123;namn1;namn1_2;namn1_3;
-4567;namn2;namn2_2;
-8910;namn3;
+1;a;b;c;d;
+2;a;
