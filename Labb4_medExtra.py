@@ -6,8 +6,9 @@ class contact:
         self.number = number
 
 
-def findAll(name, number = None):
+def findAll(phonebook, name, number = None):
     retVal = []
+    #använder numbret om det ät angivet, annars namnet
     if(number == None):
         for contacts in phonebook:
             if contacts.name == name:
@@ -20,67 +21,83 @@ def findAll(name, number = None):
     return retVal
 
 
-def add(name, number):
-    if findAll(name, number) == []:
+def add(phonebook, name, number):
+    if findAll(phonebook, name, number) == []:
         phonebook.append( contact(name, number))
     else:
         print("contact with that number already exist!")
+
+    return phonebook
         
 
-def lookup(name):
-    contacts = findAll(name)
-    for element in contacts:
-        print(element.number)
+def lookup(phonebook, name):
+    contacts = findAll(phonebook, name)
+    if len(contacts) > 0:
+        for element in contacts:
+            print(element.number)
+    else:
+        print("Contact dosn't exist!")
+
+    return phonebook
         
 
-def alias(name, newname, number = None):
-    contacts = findAll(name, number)
+def alias(phonebook, name, newname, number = None):
+    contacts = findAll(phonebook, name, number)
     
     if len(contacts) > 1:
         print("Serveral contacts with that name exists, please enter a number aswell.")
             
     elif len(contacts) == 1:
+        
         if(contacts[0].isAliasTo == None):
-            cont = contact(newname, number, contacts[0])
+            cont = contact(newname, contacts[0].number, contacts[0])
             phonebook.append(cont)
             contacts[0].alias.append(cont)
 
         else:
-            cont = contact(newname, number, contacts[0].isAliasTo)
+            cont = contact(newname, contacts[0].number, contacts[0].isAliasTo)
             phonebook.append(cont)
             contacts[0].isAliasTo.alias.append(cont)
             
             
     else:
         print("Contact dosn't exist!")
-    
+
+    return phonebook
     
 
-def change(name, newNumber, oldNumber = None):
-    contacts = findAll(name, oldNumber)
+def change(phonebook, name, newNumber, oldNumber = None):
     
-    if len(contacts) > 1:
-        print("Serveral contacts with that name exists, please enter a number aswell.")
-            
-    elif len(contacts) == 1:
-        contacts[0].number = newNumber
+    if findall(phonebook, None, newNumber):
+        print("contact with that number already exist!")
         
-        if(contacts[0].isAliasTo == None):
-            
-            for elements in contacts[0].alias:
-                elements.number = newNumber
-
-        else:
-            contacts[0].isAliasTo.number = newNumber
-            
-            for elements in contacts[0].isAliasTo.alias:
-                elements.number = newNumber
-            
     else:
-        print("Contact dosn't exist!")
+        contacts = findAll(phonebook, name, oldNumber)
+        
+        if len(contacts) > 1:
+            print("Serveral contacts with that name exists, please enter a number aswell.")
+                
+        elif len(contacts) == 1:
+            contacts[0].number = newNumber
+            
+            if(contacts[0].isAliasTo == None):
+                
+                for elements in contacts[0].alias:
+                    elements.number = newNumber
+
+            else:
+                contacts[0].isAliasTo.number = newNumber
+                
+                for elements in contacts[0].isAliasTo.alias:
+                    elements.number = newNumber
+                
+        else:
+            print("Contact dosn't exist!")
+
+    return phonebook
 
 
-def save(filename):
+def save(phonebook, filename):
     file = open(filename,"w+")
     
     for contacts in phonebook:
@@ -94,22 +111,57 @@ def save(filename):
     
     file.close()
 
-def load(filename):
-    file = open(filename)
-    lines = [line.rstrip(';\n') for line in file]
+    return phonebook
+
+def load(phonebook, filename): 
+    try:
+        file = open(filename)
+        lines = [line.rstrip(';\n') for line in file]
+
+        oldPhonebook = phonebook
+        phonebook = []
+
+        try:
+            for contacts in lines:
+                cont = contacts.split(';')
+                
+                add(phonebook, cont[1], cont[0])
+                
+                if len(cont) > 2:
+                    for element in cont[2:]: #börjar på cont[2]
+                        alias(phonebook, cont[1], element, cont[0])
+        except:
+            print("corrupt file!")
+            phonebook = oldPhonebook
+            
+        file.close()
     
-    for contacts in lines:
-        cont = contacts.split(';')
+    except:
+        print("Can't open/find file")
+            
+
+    return phonebook
+
+
+def promt():
+    phonebook = []
+    command = input("telebok> ")
+
+    while command != "quit":
         
-        add(cont[1], cont[0])
+        command += ('")') 
+        command = command.replace(' ', '(phonebook,"', 1)
+        command = command.replace(' ', '", "')
         
-        if len(cont) > 2:
-            for element in cont[2:]: #börjar på cont[2]
-                alias(cont[1], element, cont[0])
+        try:
+            phonebook = eval(command)
+        except:
+            print("Command failed!")
         
-    file.close()
+        command = input("telebok> ")
 
 
 #---main---#
 
-phonebook = []
+promt()
+
