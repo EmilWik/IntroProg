@@ -13,6 +13,7 @@ def findAll(phonebook, name, number = None):
         for contacts in phonebook:
             if contacts.name == name:
                 retVal.append(contacts)
+                
     else:
         for contacts in phonebook:
             if contacts.number == number and contacts.isAliasTo == None:
@@ -68,7 +69,7 @@ def alias(phonebook, name, newname, number = None):
 
 def change(phonebook, name, newNumber, oldNumber = None):
     
-    if findall(phonebook, None, newNumber):
+    if findAll(phonebook, None, newNumber):
         print("contact with that number already exist!")
         
     else:
@@ -143,6 +144,36 @@ def load(phonebook, filename):
     return phonebook
 
 
+def remove(phonebook, name, number = None):
+    contacts = findAll(phonebook, name, number)
+    
+    if len(contacts) > 1:
+        print("Serveral contacts with that name exists, please enter a number aswell.")
+            
+    elif len(contacts) == 1:
+        if(contacts[0].isAliasTo == None):
+            for elements in contacts[0].alias:
+                phonebook.remove(elements)
+                
+            phonebook.remove(contacts[0])
+        else:
+            for elements in contacts[0].isAliasTo.alias:
+                phonebook.remove(elements)
+                
+            phonebook.remove(contacts[0].isAliasTo)
+            
+    else:
+        print("Contact dosn't exist!")
+
+    return phonebook
+
+
+def printAll(phonebook,emty):
+    for a in phonebook:
+        print (a.name + ": " + a.number)
+    return phonebook
+
+
 def promt():
     phonebook = []
     command = input("telebok> ")
@@ -153,12 +184,15 @@ def promt():
         command = command.replace(' ', '(phonebook,"', 1)
         command = command.replace(' ', '", "')
         
-        try:
-            phonebook = eval(command)
-        except:
-            print("Command failed!")
+        #try:
+        phonebook = eval(command)
+        #except:
+         #   print("Command failed!")
         
         command = input("telebok> ")
+        #Tar bort alla vittecken som inte är ett mellanslag
+        while '  ' in command:
+            command = command.replace('  ', ' ')
 
 
 #---main---#
