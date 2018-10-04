@@ -214,11 +214,14 @@ def promt():
     command = input("telebok> ")
 
     while command != "quit":
+        
+        command = command.strip() #Tar bort första/sista karaktären om den är ett mellanslag
+        command = command.replace('\t', ' ') #byter ut alla tab mot mellanslag
+        
         #Tar bort alla vittecken som inte är ett mellanslag. Ser till att inga dubbel mellanslag finns
         while '  ' in command:
             command = command.replace('  ', ' ')
 
-        command = command.rstrip() #Tar bort sista karaktären om den är ett whitespace
 
         #Formanterar om kommandot så att så att blir som en funktion
         #ex: add test 123 -> add(phonebook,test,123)
